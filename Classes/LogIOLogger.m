@@ -1,5 +1,4 @@
 #import "LogIOLogger.h"
-#import "GCDAsyncSocket.h"
 
 @interface LogIOLogger ()
 
@@ -14,11 +13,17 @@
 
 static LogIOLogger *sharedInstance;
 
-static NSString *const REGISTER_NODE_PATTERN = @"+node|%@|%@\r\n";
-static NSString *const LOG_FORMAT = @"+log|%@|%@|%d|%@\r\n";
+static NSString *const REGISTER_NODE_PATTERN = @"+input|%@|%@\r\0";
+static NSString *const LOG_FORMAT = @"+log|%@|%@|%d|%@\r\0";
 
 + (LogIOLogger *)sharedInstance {
     return sharedInstance;
+}
+
++ (void)configure {
+    NSString *deviceName = [[UIDevice currentDevice] name];
+    NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleDisplayName"] ?: @"iOS App";
+    [self configureNode:deviceName stream:appName];
 }
 
 + (void)connectTo:(NSString *)host port:(uint16_t)port {
